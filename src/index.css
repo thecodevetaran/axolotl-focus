@@ -1,0 +1,64 @@
+:root {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-glass: rgba(30, 41, 59, 0.7);
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --accent-primary: #10b981; /* Emerald for focus */
+  --accent-secondary: #f472b6; /* Pink for Axolotl */
+  --accent-glow: rgba(16, 185, 129, 0.4);
+  --border-color: rgba(255, 255, 255, 0.1);
+  --radius-lg: 24px;
+  --radius-md: 16px;
+  --shadow-lg: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-image:
+    radial-gradient(circle at 10% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(244, 114, 182, 0.1) 0%, transparent 40%);
+}
+
+#root {
+  width: 100%;
+  max-width: 1200px;
+  padding: 2rem;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.glass-panel {
+  background: var(--bg-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+input {
+  border: none;
+  outline: none;
+  font-family: inherit;
+}
