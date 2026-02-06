@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 
 const PomodoroTimer = ({ onComplete }) => {
+    // Custom settings state (in minutes)
+    const [customFocusTime, setCustomFocusTime] = useState(25);
+    const [customBreakTime, setCustomBreakTime] = useState(5);
+    const [showSettings, setShowSettings] = useState(false);
+
     const [timeLeft, setTimeLeft] = useState(25 * 60);
     const [isActive, setIsActive] = useState(false);
     const [mode, setMode] = useState('focus'); // focus | break
@@ -22,19 +27,27 @@ const PomodoroTimer = ({ onComplete }) => {
             // Auto-switch mode
             if (mode === 'focus') {
                 setMode('break');
-                setTimeLeft(5 * 60);
+                setTimeLeft(customBreakTime * 60);
             } else {
                 setMode('focus');
-                setTimeLeft(25 * 60);
+                setTimeLeft(customFocusTime * 60);
             }
         }
         return () => clearInterval(interval);
-    }, [isActive, timeLeft, mode, onComplete]);
+    }, [isActive, timeLeft, mode, onComplete, customFocusTime, customBreakTime]);
+
+    // Update timer when settings change (only if not active to avoid jumping jumps)
+    useEffect(() => {
+        if (!isActive) {
+            setTimeLeft(mode === 'focus' ? customFocusTime * 60 : customBreakTime * 60);
+        }
+    }, [customFocusTime, customBreakTime]);
+
 
     const toggleTimer = () => setIsActive(!isActive);
     const resetTimer = () => {
         setIsActive(false);
-        setTimeLeft(mode === 'focus' ? 25 * 60 : 5 * 60);
+        setTimeLeft(mode === 'focus' ? customFocusTime * 60 : customBreakTime * 60);
     };
 
     const formatTime = (seconds) => {
@@ -43,24 +56,63 @@ const PomodoroTimer = ({ onComplete }) => {
         return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     };
 
-    const totalTime = mode === 'focus' ? 25 * 60 : 5 * 60;
+    const totalTime = mode === 'focus' ? customFocusTime * 60 : customBreakTime * 60;
     const progress = ((totalTime - timeLeft) / totalTime) * 100;
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <h2 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 Focus Timer
-                <span style={{
-                    fontSize: '0.8rem',
-                    padding: '0.4rem 0.8rem',
-                    background: mode === 'focus' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(148, 163, 184, 0.2)',
-                    color: mode === 'focus' ? 'var(--accent-primary)' : 'var(--text-secondary)',
-                    borderRadius: '20px',
-                    fontWeight: '600'
-                }}>
-                    {mode === 'focus' ? '🔥 Focus Mode' : '☕ Break Time'}
-                </span>
+                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                    <span style={{
+                        fontSize: '0.8rem',
+                        padding: '0.4rem 0.8rem',
+                        background: mode === 'focus' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(148, 163, 184, 0.2)',
+                        color: mode === 'focus' ? 'var(--accent-primary)' : 'var(--text-secondary)',
+                        borderRadius: '20px',
+                        fontWeight: '600'
+                    }}>
+                        {mode === 'focus' ? '🔥 Focus Mode' : '☕ Break Time'}
+                    </span>
+                    <button
+                        onClick={() => setShowSettings(!showSettings)}
+                        style={{
+                            background: 'none',
+                            border: 'none',
+                            fontSize: '1.2rem',
+                            cursor: 'pointer',
+                            opacity: 0.7
+                        }}
+                        title="Timer Settings"
+                    >
+                        ⚙️
+                    </button>
+                </div>
             </h2>
+
+            {showSettings && (
+                <div className="glass-panel" style={{ padding: '1rem', marginBottom: '1rem', display: 'flex', gap: '1rem', justifyContent: 'space-around', fontSize: '0.9rem' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                        <label>Focus (min)</label>
+                        <input
+                            type="number"
+                            value={customFocusTime}
+                            onChange={(e) => setCustomFocusTime(Number(e.target.value))}
+                            style={{ padding: '0.5rem', borderRadius: '8px', background: 'rgba(0,0,0,0.2)', color: 'white', width: '60px' }}
+                        />
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                        <label>Break (min)</label>
+                        <input
+                            type="number"
+                            value={customBreakTime}
+                            onChange={(e) => setCustomBreakTime(Number(e.target.value))}
+                            style={{ padding: '0.5rem', borderRadius: '8px', background: 'rgba(0,0,0,0.2)', color: 'white', width: '60px' }}
+                        />
+                    </div>
+                </div>
+            )}
+
             <div className="glass-panel" style={{ padding: '2rem', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
 
                 {/* Progress Bar Background */}
